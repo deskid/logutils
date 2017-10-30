@@ -1,6 +1,7 @@
 package com.github.logutils;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.lang.reflect.Field;
 
@@ -27,15 +28,17 @@ public class DebugUtils {
      * BuildConfig.DEBUG will always return false in library projects
      * see https://code.google.com/p/android/issues/detail?id=52962
      */
-    static boolean isDebug() {
+    public static boolean isDebug() {
         if (sDebug == null) {
+            final String packageName = getApplicationContext().getPackageName();
             try {
-                final String packageName = getApplicationContext().getPackageName();
                 final Class<?> buildConfig = Class.forName(packageName + ".BuildConfig");
                 final Field DEBUG = buildConfig.getField("DEBUG");
                 DEBUG.setAccessible(true);
                 sDebug = DEBUG.getBoolean(null);
+                Log.d("DebugUtils", "packageName : " + packageName + "; BuildConfig.DEBUG : " + sDebug);
             } catch (final Throwable t) {
+                Log.d("DebugUtils", "packageName invalid : " + packageName + "; BuildConfig.DEBUG : " + sDebug);
                 sDebug = false;
             }
         }
